@@ -44,20 +44,21 @@ class IndeedSearch:
         Generates the divs for parsing.
         '''
         final = []
-        if(soup.find_all("span", {"class" : "pn"}) == None):
-            print("Next button fail in genDivs. Please run again.")
+        try:
+            while( soup.find_all("span", {"class" : "pn"})[-1].text.find("Next") >= 0 and len(final) <= limit):
+                nextPage = "http://www.indeed.com" + soup.find_all("span", {"class" : "pn"})[-1].parent.attrs["href"]
+                try:
+                    self.browser.get(nextPage)
+                except Exception as e:
+                    print(e)
+                soup = BeautifulSoup(self.browser.page_source, "lxml")
+                divlist = soup.findAll("div", {"class" : re.compile("jobsearch-SerpJobCard row result clickcard(.*)"),
+                                        "data-tn-component" : "organicJob"})
+                final += divlist
+        except Exception as e:
+            raise ValueError("Location may be invalid")
             sys.exit()
 
-        while( soup.find_all("span", {"class" : "pn"})[-1].text.find("Next") >= 0 and len(final) <= limit):
-            nextPage = "http://www.indeed.com" + soup.find_all("span", {"class" : "pn"})[-1].parent.attrs["href"]
-            try:
-                self.browser.get(nextPage)
-            except Exception as e:
-                print(e)
-            soup = BeautifulSoup(self.browser.page_source, "lxml")
-            divlist = soup.findAll("div", {"class" : re.compile("jobsearch-SerpJobCard row result clickcard(.*)"),
-                                    "data-tn-component" : "organicJob"})
-            final += divlist
         if(output):
             print("Retrieved divs")
         return final
@@ -171,6 +172,6 @@ class IndeedSearch:
                             'state' : state})
             if(i % 50 == 0 and i != 0 and output):
                 print("Retrieved", i, "job posts")
-                
+
         print("Retrieved", len(joblist), "job posts")
         return joblist
