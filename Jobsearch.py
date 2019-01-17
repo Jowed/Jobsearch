@@ -44,7 +44,7 @@ class IndeedSearch:
         Generates the divs for parsing.
         '''
         final = []
-        try:
+        if( soup.find_all("span", {"class" : "pn"}) != None and len(soup.find_all("span", {"class" : "pn"})) != 0 ):
             while( soup.find_all("span", {"class" : "pn"})[-1].text.find("Next") >= 0 and len(final) <= limit):
                 nextPage = "http://www.indeed.com" + soup.find_all("span", {"class" : "pn"})[-1].parent.attrs["href"]
                 try:
@@ -55,9 +55,12 @@ class IndeedSearch:
                 divlist = soup.findAll("div", {"class" : re.compile("jobsearch-SerpJobCard row result clickcard(.*)"),
                                         "data-tn-component" : "organicJob"})
                 final += divlist
-        except Exception as e:
-            raise ValueError("Location may be invalid")
-            sys.exit()
+        else:
+            soup = BeautifulSoup(self.browser.page_source, "lxml")
+            divlist = soup.findAll("div", {"class" : re.compile("jobsearch-SerpJobCard row result clickcard(.*)"),
+                                    "data-tn-component" : "organicJob"})
+            final = divlist
+
 
         if(output):
             print("Retrieved divs")
