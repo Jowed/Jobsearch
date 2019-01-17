@@ -80,7 +80,7 @@ class IndeedSearch:
             text = desc.get_text("\n")
             return text
         else:
-            return div.find("span", {"class" : "summary"}).get_text(strip=True)
+            return div.find("span", {"class" : "summary"}).get_text("\n", strip=True)
 
     def __getTitle__(self, div):
         '''
