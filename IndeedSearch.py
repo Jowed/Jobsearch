@@ -45,7 +45,6 @@ class IndeedSearch:
                 browser.get(nextPage)
             except Exception as e:
                 print(e)
-            soup = BeautifulSoup(self.browser.page_source, "lxml")
             divlist = soup.findAll("div", {"class" : re.compile("jobsearch-SerpJobCard row result clickcard(.*)"),
                                     "data-tn-component" : "organicJob"})
             final += divlist
